@@ -34,11 +34,15 @@ const tasks = [{
   // Найти ul в который будет рендерится все li (таски)
   const ulContainer = document.querySelector('.tasks-list-section .list-group');
 
+  // форма добавления таска
   const form = document.forms['addTask'];
   const formTitle = form.elements['title'];
   const formBody = form.elements['body'];
 
+  // рендеринг таков
   renderAllTasks(objOfTask);
+
+  // добавления нового таска
   form.addEventListener("submit", onFormSubmitHendler);
 
   // Деструктурирует объекта task
