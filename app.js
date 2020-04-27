@@ -34,7 +34,12 @@ const tasks = [{
   // Найти ul в который будет рендерится все li (таски)
   const ulContainer = document.querySelector('.tasks-list-section .list-group');
 
+  const form = document.forms['addTask'];
+  const formTitle = form.elements['title'];
+  const formBody = form.elements['body'];
+
   renderAllTasks(objOfTask);
+  form.addEventListener("submit", onFormSubmitHendler);
 
   // Деструктурирует объекта task
   // Создает елементы и наполняет елементы данными из task
@@ -84,6 +89,37 @@ const tasks = [{
       fragment.appendChild(fragmentLi);
     });
     ulContainer.appendChild(fragment);
+  }
+
+  // Формирует объект нового такска
+  function createNewTask(title, body) {
+    const newTask = {
+      _id: 'task-' + String(Math.random()).split('.')[1],
+      title: title,
+      body: body,
+      completed: true,
+    };
+    objOfTask[newTask._id] = newTask;
+    return {
+      ...newTask
+    };
+  }
+
+  // Добавляет новый таск в разметку
+  function onFormSubmitHendler(event) {
+    event.preventDefault();
+
+    const titleValue = formTitle.value;
+    const bodyValue = formBody.value;
+
+    if (!titleValue && !bodyValue) {
+      alert('add Title and Body');
+      return;
+    }
+    const task = createNewTask(titleValue, bodyValue);
+    const listItem = listItemTemplate(task);
+    ulContainer.insertAdjacentElement("afterbegin", listItem);
+    form.reset();
   }
 
 })(tasks);
