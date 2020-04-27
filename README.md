@@ -1,2 +1,2 @@
 # Приложение Task List
-[Task List]:(https://mebius01.github.io/todo-list-JS)
+Домен: [https://mebius01.github.io/todo-list-JS](https://mebius01.github.io/todo-list-JS)
