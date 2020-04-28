@@ -24,195 +24,96 @@ const tasks = [{
   },
 ];
 
-const ulContainer = document.querySelector('.tasks-list-section .list-group');
-const form = document.forms['addTask'];
-const formTitle = form.elements['title'];
-const formBody = form.elements['body'];
-/**
- * Рендеринг масива с объектами
- */
-// Формирует готовый li
-function listItemTemplate({_id,title,body} = {}) {
-  const li = document.createElement('li');
-  li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'flex-wrap', 'mt-2');
+(function (arrTasks) {
+  const ulContainer = document.querySelector('.tasks-list-section .list-group');
+  const form = document.forms['addTask'];
+  const formTitle = form.elements['title'];
+  const formBody = form.elements['body'];
 
-  const h2 = document.createElement('h2');
-  h2.textContent = title;
+  form.addEventListener("submit", formSubmitHendler);
 
-  const p = document.createElement('p');
-  p.classList.add('mt-2', 'w-100');
-  p.textContent = body;
+  renderAllTasks(arrTasks);
 
-  const buttonDelete = document.createElement('button');
-  buttonDelete.classList.add('btn', 'btn-danger', 'ml-auto', 'delete-btn');
-  buttonDelete.textContent = 'Delete';
-
-  li.appendChild(h2);
-  li.appendChild(p);
-  li.appendChild(buttonDelete);
-
-  return li;
-}
-
-// Принимает массив проверяет не пуст ли он
-// Создает фрагмент
-// Перебирает каждый елемент в forEach и на каждой итерации
-// вызывает  listItemTemplate кторая возвращает наполненный li
-// фрагмент наполняет ul
-function renderAllTasks(arr) {
-if (!arr) {
-alert("Таски пустые");
-return;
-}
-const fragment = document.createDocumentFragment();
-arr.forEach(item => {
-// listItemTemplate(item)
-fragment.appendChild(listItemTemplate(item))
-})
-return ulContainer.appendChild(fragment);
-// console.log(fragment)
-}
-renderAllTasks(tasks)
-
-form.addEventListener("submit", formSubmitHendler)
+  ulContainer.addEventListener('click', delTaskHendler);
 
 
+  // Формирует шаблон li
+  function listItemTemplate({
+    _id,
+    title,
+    body
+  } = {}) {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'flex-wrap', 'mt-2');
 
-/**
- * Добавляет нвый таск
-*/
-// Формирует таск-объект
-function ObjectTask(title, body) {
-  return {
-    _id: 'task-'+ String(Math.random()).split('.')[1],
-    title: title,
-    body: body,
-    completed: false,
-  }
-}
+    const h2 = document.createElement('h2');
+    h2.textContent = title;
 
-// Наполняет объект данными из формы и вставляет его в ul.
-function formSubmitHendler(event) {
-  event.preventDefault();
-  const title = formTitle.value;
-  const body = formBody.value;
+    const p = document.createElement('p');
+    p.classList.add('mt-2', 'w-100');
+    p.textContent = body;
 
-  if (!title || !body) {
-    alert("Input none!");
-    return;
+    const buttonDelete = document.createElement('button');
+    buttonDelete.classList.add('btn', 'btn-danger', 'ml-auto', 'delete-btn');
+    buttonDelete.textContent = 'Delete';
+
+    li.appendChild(h2);
+    li.appendChild(p);
+    li.appendChild(buttonDelete);
+
+    return li;
   }
 
-  const newTask = ObjectTask(title, body);
-  const liNewTask = listItemTemplate(newTask);
-  ulContainer.insertAdjacentElement("afterbegin", liNewTask);
-  form.reset();
-}
+  // Рендеринг таска
+  function renderAllTasks(arr) {
+    if (!arr) {
+      alert("Таски пустые");
+      return;
+    }
+    const fragment = document.createDocumentFragment();
+    arr.forEach(item => {
+      // listItemTemplate(item)
+      fragment.appendChild(listItemTemplate(item));
+    });
+    return ulContainer.appendChild(fragment);
+    // console.log(fragment)
+  }
 
-// Формирует объект объектов с ключом в виде id
-// const arrOfTasks = tasks.reduce((acc, item)=>{
-//   acc[item._id]=item;
-//   return acc;
-// }, {})
-// console.log(arrOfTasks)
+  // Формирует таск-объект
+  function ObjectTask(title, body) {
+    return {
+      _id: 'task-' + String(Math.random()).split('.')[1],
+      title: title,
+      body: body,
+      completed: false,
+    }
+  }
 
+  // Добавляет нвый таск в разметку
+  function formSubmitHendler(event) {
+    event.preventDefault();
+    const title = formTitle.value;
+    const body = formBody.value;
 
+    if (!title || !body) {
+      alert("Input none!");
+      return;
+    }
 
-// arrOfTasks(tasks);
-// (function (arrOfTasks) {
-//   // Сздать объект объектов с ключем _id
-//   const objOfTask = arrOfTasks.reduce((acc, task) => {
-//     acc[task._id] = task;
-//     return acc;
-//   }, {});
+    const newTask = ObjectTask(title, body);
+    const liNewTask = listItemTemplate(newTask);
+    ulContainer.insertAdjacentElement("afterbegin", liNewTask);
+    form.reset();
+  }
 
-//   // Найти ul в который будет рендерится все li (таски)
-//   const ulContainer = document.querySelector('.tasks-list-sobjOfTask
+  // Удаляет таск
+  function delTaskHendler(event) {
+    const delBtn = event.target;
+    if (delBtn.classList.contains('delete-btn')) {
+      if (confirm("Ты здесь главный?")) {
+        delBtn.parentElement.remove();
+      }
+    }
+  }
 
-//   // рендеринг таков
-//   renderAllTasks(objOfTask);
-
-//   // добавления нового таска
-//   form.addEventListener("submit", onFormSubmitHendler);
-
-//   // Деструктурирует объекта task
-//   // Создает елементы и наполняет елементы данными из task
-//   // Возвращает готовый елемент li
-//   function listItemTemplate({
-//     _id,
-//     title,
-//     body
-//   } = {}) {
-//     const li = document.createElement('li');
-//     li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'flex-wrap', 'mt-2');
-
-//     const h2 = document.createElement('h2');
-//     h2.textContent = title;
-
-//     const p = document.createElement('p');
-//     p.classList.add('mt-2', 'w-100');
-//     p.textContent = body;
-
-//     const buttonDelete = document.createElement('button');
-//     buttonDelete.classList.add('btn', 'btn-danger', 'ml-auto', 'delete-btn');
-//     buttonDelete.textContent = 'Delete';
-
-//     li.appendChild(h2);
-//     li.appendChild(p);
-//     li.appendChild(buttonDelete);
-
-//     return li;
-//   }
-
-//   // Принимает объект проверяет не пуст ли он
-//   // Создает фрагмент
-//   // Перебирает каждый елемент в forEach и на каждой итерации
-//   // вызывает  listItemTemplate кторая возвращает наполненный li
-//   // фрагмент наполняет ul
-//   function renderAllTasks(tasksList) {
-//     const objValue = Object.values(tasksList);
-//     const fragment = document.createDocumentFragment();
-
-//     if (!tasksList) {
-//       console.error("ТаскЛист пуст!");
-//       return;
-//     }
-
-//     objValue.forEach(task => {
-//       const fragmentLi = listItemTemplate(task);
-//       fragment.appendChild(fragmentLi);
-//     });
-//     ulContainer.appendChild(fragment);
-//   }
-
-//   // Формирует объект нового такска
-//   function createNewTask(title, body) {
-//     const newTask = {
-//       _id: 'task-' + String(Math.random()).split('.')[1],
-//       title: title,
-//       body: body,
-//       completed: true,
-//     };
-//     objOfTask[newTask._id] = newTask;
-//     return {
-//       ...newTask
-//     };
-//   }
-
-//   // Добавляет новый таск в разметку
-//   function onFormSubmitHendler(event) {
-//     event.preventDefault();
-
-//     const titleValue = formTitle.value;
-//     const bodyValue = formBody.value;
-
-//     if (!titleValue && !bodyValue) {
-//       alert('add Title and Body');
-//       return;
-//     }
-//     const task = createNewTask(titleValue, bodyValue);
-//     const listItem = listItemTemplate(task);
-//     ulContainer.insertAdjacentElement("afterbegin", listItem);
-//     form.reset();
-//   }
-
-// })(tasks);
+})(tasks);
