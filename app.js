@@ -137,8 +137,13 @@ const tasks = [{
     const completedBtn = event.target;
     if (completedBtn.classList.contains('completed-btn')) {
       const parentBtn = completedBtn.parentElement;
+
       parentBtn.style.background = '#D3D3D3';
       ulContainer.insertAdjacentElement('beforeend', parentBtn);
+
+      completedBtn.classList.remove('btn-success', 'completed-btn');
+      completedBtn.classList.add('btn-warning', 'reject_completed-btn');
+      completedBtn.textContent = 'Reject Completion';
     }
   }
 
