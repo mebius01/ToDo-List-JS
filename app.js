@@ -35,7 +35,14 @@ const tasks = [{
   renderAllTasks(arrTasks);
 
   ulContainer.addEventListener('click', delTaskHendler);
+  ulContainer.addEventListener('click', completedTaskHendler);
 
+  // Формирует объект объектов с ключом в виде id
+  // const arrOfTasks = tasks.reduce((acc, item) => {
+  //   acc[item._id] = item;
+  //   return acc;
+  // }, {})
+  // console.log(arrOfTasks);
 
   // Формирует шаблон li
   function listItemTemplate({
@@ -57,12 +64,18 @@ const tasks = [{
     buttonDelete.classList.add('btn', 'btn-danger', 'ml-auto', 'delete-btn');
     buttonDelete.textContent = 'Delete';
 
+    const buttonCompleted = document.createElement('button');
+    buttonCompleted.classList.add('btn', 'btn-success', 'mr-auto', 'completed-btn');
+    buttonCompleted.textContent = 'Completed';
+
     li.appendChild(h2);
     li.appendChild(p);
+    li.appendChild(buttonCompleted);
     li.appendChild(buttonDelete);
 
     return li;
   }
+  console.log(listItemTemplate());
 
   // Рендеринг таска
   function renderAllTasks(arr) {
@@ -81,12 +94,14 @@ const tasks = [{
 
   // Формирует таск-объект
   function ObjectTask(title, body) {
-    return {
+    const objTask = {
       _id: 'task-' + String(Math.random()).split('.')[1],
       title: title,
       body: body,
       completed: false,
     }
+    arrTasks.push(objTask);
+    return objTask;
   }
 
   // Добавляет нвый таск в разметку
@@ -104,6 +119,7 @@ const tasks = [{
     const liNewTask = listItemTemplate(newTask);
     ulContainer.insertAdjacentElement("afterbegin", liNewTask);
     form.reset();
+    console.log(arrTasks);
   }
 
   // Удаляет таск
@@ -113,6 +129,16 @@ const tasks = [{
       if (confirm("Ты здесь главный?")) {
         delBtn.parentElement.remove();
       }
+    }
+  }
+
+  // Завершение задачи
+  function completedTaskHendler(event) {
+    const completedBtn = event.target;
+    if (completedBtn.classList.contains('completed-btn')) {
+      const parentBtn = completedBtn.parentElement;
+      parentBtn.style.background = '#D3D3D3';
+      ulContainer.insertAdjacentElement('beforeend', parentBtn);
     }
   }
 
