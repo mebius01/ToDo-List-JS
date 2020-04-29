@@ -1,6 +1,6 @@
 const tasks = [{
     _id: '5d2ca9e2e03d40b326596aa7',
-    completed: true,
+    completed: false,
     body: 'Occaecat non ea quis occaecat ad culpa amet deserunt incididunt elit fugiat pariatur. Exercitation commodo culpa in veniam proident laboris in. Excepteur cupidatat eiusmod dolor consectetur exercitation nulla aliqua veniam fugiat irure mollit. Eu dolor dolor excepteur pariatur aute do do ut pariatur consequat reprehenderit deserunt.\r\n',
     title: 'Eu ea incididunt',
   },
@@ -12,7 +12,7 @@ const tasks = [{
   },
   {
     _id: '5d2ca9e2e03d40b3232496aa7',
-    completed: true,
+    completed: false,
     body: 'Occaecat non ea quis occaecat ad culpa amet deserunt incididunt elit fugiat pariatur. Exercitation commodo culpa in veniam proident laboris in. Excepteur cupidatat eiusmod dolor consectetur exercitation nulla aliqua veniam fugiat irure mollit. Eu dolor dolor excepteur pariatur aute do do ut pariatur consequat reprehenderit deserunt.\r\n',
     title: 'Eu fugiat non.',
   },
@@ -29,21 +29,54 @@ const tasks = [{
   const form = document.forms['addTask'];
   const formTitle = form.elements['title'];
   const formBody = form.elements['body'];
+  // const completedTasks = document.querySelector('.completed-tasks');
+  // const allTasks= document.querySelector('.all-tasks');
+  // const unfinishedTasks= document.querySelector('.unfinished-tasks');
+  const filterGroupTasks = document.querySelector('.filter-tasks')
 
   form.addEventListener("submit", formSubmitHendler);
 
-  renderAllTasks(arrTasks);
 
   ulContainer.addEventListener('click', delTaskHendler);
-  ulContainer.addEventListener('click', completedTaskHendler);
+  ulContainer.addEventListener('click', executeTaskHendler);
+  filterGroupTasks.addEventListener('click', filterTasks);
+
+  function filterTasks(event) {
+    const eventBtn = event.target;
+    if (eventBtn.classList.contains('completed-tasks')) {
+      const arr2 = arrTasks.filter(item => item.completed == false );
+      // arr2.forEach(item => {
+      //   let elLi = document.getElementById(item._id);
+      //   elLi.remove();
+      // })
+    } else {
+        if (eventBtn.classList.contains('unfinished-tasks')) {
+          const arr2 = arrTasks.filter(item => item.completed == true );
+          arr2.forEach(item => {
+            let elLi = document.getElementById(item._id);
+            elLi.remove();
+          })
+        } else {
+          renderAllTasks(arrTasks);
+        }
+      }
+    }
+
+  renderAllTasks(arrTasks);
 
   // Формирует объект объектов с ключом в виде id
-  // const arrOfTasks = tasks.reduce((acc, item) => {
-  //   acc[item._id] = item;
-  //   return acc;
-  // }, {})
-  // console.log(arrOfTasks);
+  const arrOfTasks = tasks.reduce((acc, item) => {
+    acc[item._id] = item;
+    return acc;
+  }, {})
 
+  // Пустй таск лист
+  function emptyTasks() {
+    const li = document.createElement('li');
+    li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'flex-wrap', 'mt-2')
+    li.textContent = arrTasks.length
+    ulContainer.appendChild(li);
+  }
   // Формирует шаблон li
   function listItemTemplate({
     _id,
@@ -68,6 +101,7 @@ const tasks = [{
     buttonCompleted.classList.add('btn', 'btn-success', 'mr-auto', 'completed-btn');
     buttonCompleted.textContent = 'Completed';
 
+    li.setAttribute('id', _id);
     li.appendChild(h2);
     li.appendChild(p);
     li.appendChild(buttonCompleted);
@@ -75,7 +109,7 @@ const tasks = [{
 
     return li;
   }
-  console.log(listItemTemplate());
+  // console.log(listItemTemplate());
 
   // Рендеринг таска
   function renderAllTasks(arr) {
@@ -100,8 +134,25 @@ const tasks = [{
       body: body,
       completed: false,
     }
+    // Добавить таск в общи массив
     arrTasks.push(objTask);
+    console.log(objTask);
     return objTask;
+  }
+
+  // Удаляем таск-объект
+  function delObjectTask(id) {
+    const obj = arrOfTasks[id]
+    const i = arrTasks.indexOf(obj, 0)
+    arrTasks.splice(i, 1);
+  }
+
+  // Заначение complited
+  function complitedObjectTask(id, bool) {
+    const obj = arrOfTasks[id];
+    const i = arrTasks.indexOf(obj, 0);
+    arrTasks[i].completed = bool;
+    console.log(arrTasks);
   }
 
   // Добавляет нвый таск в разметку
@@ -119,31 +170,42 @@ const tasks = [{
     const liNewTask = listItemTemplate(newTask);
     ulContainer.insertAdjacentElement("afterbegin", liNewTask);
     form.reset();
-    console.log(arrTasks);
   }
 
   // Удаляет таск
   function delTaskHendler(event) {
     const delBtn = event.target;
     if (delBtn.classList.contains('delete-btn')) {
+      const idElement = delBtn.parentElement.getAttribute('id')
       if (confirm("Ты здесь главный?")) {
+        delObjectTask(idElement);
         delBtn.parentElement.remove();
       }
     }
   }
 
-  // Завершение задачи
-  function completedTaskHendler(event) {
-    const completedBtn = event.target;
-    if (completedBtn.classList.contains('completed-btn')) {
-      const parentBtn = completedBtn.parentElement;
+  // Завершение таска
+  function executeTaskHendler(event) {
+    const executeBtn = event.target;
+    const parentExecute = executeBtn.parentElement;
+    const id = parentExecute.getAttribute('id');
 
-      parentBtn.style.background = '#D3D3D3';
-      ulContainer.insertAdjacentElement('beforeend', parentBtn);
-
-      completedBtn.classList.remove('btn-success', 'completed-btn');
-      completedBtn.classList.add('btn-warning', 'reject_completed-btn');
-      completedBtn.textContent = 'Reject Completion';
+    if (executeBtn.classList.contains('completed-btn')) {
+      parentExecute.style.background = '#D3D3D3';
+      ulContainer.insertAdjacentElement('beforeend', parentExecute);
+      executeBtn.classList.remove('btn-success', 'completed-btn');
+      executeBtn.classList.add('btn-warning', 'reject-btn');
+      executeBtn.textContent = 'Reject Completion';
+      complitedObjectTask(id, true);
+    } else {
+      if (executeBtn.classList.contains('reject-btn')) {
+        parentExecute.style.background = '#ffffff';
+        ulContainer.insertAdjacentElement('afterbegin', parentExecute);
+        executeBtn.classList.remove('btn-warning', 'reject-btn');
+        executeBtn.classList.add('btn-success', 'completed-btn');
+        executeBtn.textContent = 'Completion';
+        complitedObjectTask(id, false);
+      }
     }
   }
 
