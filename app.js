@@ -29,46 +29,57 @@ const tasks = [{
   const form = document.forms['addTask'];
   const formTitle = form.elements['title'];
   const formBody = form.elements['body'];
-  // const completedTasks = document.querySelector('.completed-tasks');
-  // const allTasks= document.querySelector('.all-tasks');
-  // const unfinishedTasks= document.querySelector('.unfinished-tasks');
-  const filterGroupTasks = document.querySelector('.filter-tasks')
+  const filterGroupTasks = document.querySelector('.filter-tasks');
 
   form.addEventListener("submit", formSubmitHendler);
-
 
   ulContainer.addEventListener('click', delTaskHendler);
   ulContainer.addEventListener('click', executeTaskHendler);
   filterGroupTasks.addEventListener('click', filterTasks);
 
+  renderAllTasks(arrTasks);
+
+  function boolComolited(bool) {
+    const newarrTasks = arrTasks.filter(item => item.completed == bool);
+    const truArr = [];
+    const flsArr = [];
+    newarrTasks.forEach(item => {
+      const elLi = document.getElementById(item._id);
+      if (bool == true) {
+        truArr.push(elLi);
+      } else {
+        if (bool == false) {
+          truArr.push(elLi);
+        }
+      }
+      console.log(truArr, flsArr);
+    });
+    // console.log(newarrTasks);
+  }
+
   function filterTasks(event) {
     const eventBtn = event.target;
+
     if (eventBtn.classList.contains('completed-tasks')) {
-      const arr2 = arrTasks.filter(item => item.completed == false );
-      // arr2.forEach(item => {
-      //   let elLi = document.getElementById(item._id);
-      //   elLi.remove();
-      // })
+      console.log('completed-tasks');
+      boolComolited(true);
     } else {
-        if (eventBtn.classList.contains('unfinished-tasks')) {
-          const arr2 = arrTasks.filter(item => item.completed == true );
-          arr2.forEach(item => {
-            let elLi = document.getElementById(item._id);
-            elLi.remove();
-          })
-        } else {
-          renderAllTasks(arrTasks);
+      if (eventBtn.classList.contains('unfinished-tasks')) {
+        console.log('unfinished-tasks');
+        boolComolited(false);
+      } else {
+        if (eventBtn.classList.contains('all-tasks')) {
+          console.log('all-tasks');
         }
       }
     }
-
-  renderAllTasks(arrTasks);
+  }
 
   // Формирует объект объектов с ключом в виде id
   const arrOfTasks = tasks.reduce((acc, item) => {
     acc[item._id] = item;
     return acc;
-  }, {})
+  }, {});
 
   // Пустй таск лист
   function emptyTasks() {
@@ -77,6 +88,7 @@ const tasks = [{
     li.textContent = arrTasks.length
     ulContainer.appendChild(li);
   }
+
   // Формирует шаблон li
   function listItemTemplate({
     _id,
@@ -106,10 +118,9 @@ const tasks = [{
     li.appendChild(p);
     li.appendChild(buttonCompleted);
     li.appendChild(buttonDelete);
-
     return li;
   }
-  // console.log(listItemTemplate());
+
 
   // Рендеринг таска
   function renderAllTasks(arr) {
@@ -136,7 +147,6 @@ const tasks = [{
     }
     // Добавить таск в общи массив
     arrTasks.push(objTask);
-    console.log(objTask);
     return objTask;
   }
 
@@ -152,7 +162,6 @@ const tasks = [{
     const obj = arrOfTasks[id];
     const i = arrTasks.indexOf(obj, 0);
     arrTasks[i].completed = bool;
-    console.log(arrTasks);
   }
 
   // Добавляет нвый таск в разметку
