@@ -45,16 +45,8 @@ const tasks = [{
     const flsArr = [];
     newarrTasks.forEach(item => {
       const elLi = document.getElementById(item._id);
-      if (bool == true) {
-        truArr.push(elLi);
-      } else {
-        if (bool == false) {
-          truArr.push(elLi);
-        }
-      }
-      console.log(truArr, flsArr);
+      console.log(elLi);
     });
-    // console.log(newarrTasks);
   }
 
   function filterTasks(event) {
