@@ -24,6 +24,15 @@ const tasks = [{
   },
 ];
 
+// 1. Если массив с задачами пустой то под формой нужно выводить сообщение об этом, также это же сообщение нужно выводить если вы удалите все задачи.
+
+// //2. В каждый элемент li добавить кнопку которая будет делать задачу выполненной. завершенные задачи должны быть подсвечены любым цветом.
+
+// //3. Добавить функционал отображения незавершенных задач и всех задач. т.е у вас будет две кнопки над таблицей 1-я "показать все задачи" и 2-я "показать незавершенные задачи", определить завершена задача или нет можно по полю completed в объекте задачи.  По умолчанию при загрузке отображаются все задачи. 
+
+// *Задача со звездочкой. При завершении задачи в разделе "незавершенные задачи" она должна от туда пропадать и быть видна в разделе "все задачи" при этом во всех задачах завершенные задачи могут быть востановленны. Также в разделе "все задачи" завершенные задачи должны быть в самом низу после открытых задач.  
+
+
 (function (arrTasks) {
   const ulContainer = document.querySelector('.tasks-list-section .list-group');
   const form = document.forms['addTask'];
@@ -37,31 +46,35 @@ const tasks = [{
   ulContainer.addEventListener('click', executeTaskHendler);
   filterGroupTasks.addEventListener('click', filterTasks);
 
-  // renderAllTasks(arrTasks);
+  renderAllTasks(arrTasks);
 
   function boolComolited(bool) {
-    const newarrTasks = arrTasks.filter(item => item.completed == bool);
-    const truArr = [];
-    const flsArr = [];
-    newarrTasks.forEach(item => {
-      const elLi = document.getElementById(item._id);
-      console.log(elLi);
+    const newArrTasks = arrTasks.filter(item => item.completed == bool);
+    const ul = ulContainer.children;
+    [...ul].forEach(item => {
+      item.remove();
     });
+    console.log(newArrTasks);
+    renderAllTasks(newArrTasks);
   }
 
   function filterTasks(event) {
     const eventBtn = event.target;
-
-    if (eventBtn.classList.contains('completed-tasks')) {
-      console.log('completed-tasks');
-      boolComolited(true);
+    if (eventBtn.classList.contains('unfinished-tasks')) {
+      console.log('unfinished-tasks');
+      boolComolited(false);
     } else {
-      if (eventBtn.classList.contains('unfinished-tasks')) {
-        console.log('unfinished-tasks');
-        boolComolited(false);
+      if (eventBtn.classList.contains('completed-tasks')) {
+        console.log('completed-tasks');
+        boolComolited(true);
       } else {
         if (eventBtn.classList.contains('all-tasks')) {
           console.log('all-tasks');
+          const ul = ulContainer.children;
+          [...ul].forEach(item => {
+            item.remove();
+          });
+          renderAllTasks(arrTasks);
         }
       }
     }
@@ -77,7 +90,7 @@ const tasks = [{
   function emptyTasks() {
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'flex-wrap', 'mt-2')
-    li.textContent = arrTasks.length
+    li.textContent = "Таски пуст";
     ulContainer.appendChild(li);
   }
 
@@ -85,7 +98,8 @@ const tasks = [{
   function listItemTemplate({
     _id,
     title,
-    body
+    body,
+    completed
   } = {}) {
     const li = document.createElement('li');
     li.classList.add('list-group-item', 'd-flex', 'align-items-center', 'flex-wrap', 'mt-2');
@@ -102,8 +116,15 @@ const tasks = [{
     buttonDelete.textContent = 'Delete';
 
     const buttonCompleted = document.createElement('button');
-    buttonCompleted.classList.add('btn', 'btn-success', 'mr-auto', 'completed-btn');
-    buttonCompleted.textContent = 'Completed';
+    if (completed) {
+      li.style.background = '#D3D3D3';
+      buttonCompleted.classList.add('btn', 'btn-warning', 'mr-auto', 'reject-btn');
+      buttonCompleted.textContent = 'Reject Completion';
+    } else {
+      li.style.background = '#FFFFFF';
+      buttonCompleted.classList.add('btn', 'btn-success', 'mr-auto', 'completed-btn');
+      buttonCompleted.textContent = 'Completed';
+    }
 
     li.setAttribute('id', _id);
     li.appendChild(h2);
@@ -113,20 +134,22 @@ const tasks = [{
     return li;
   }
 
-
   // Рендеринг таска
   function renderAllTasks(arr) {
-    if (!arr) {
-      alert("Таски пустые");
+    if (arr.length == 0) {
+      emptyTasks();
       return;
+    } else {
+      const fragment = document.createDocumentFragment();
+      arr.forEach(item => {
+        if (item.completed == true) {
+          fragment.append(listItemTemplate(item));
+        } else {
+          fragment.prepend(listItemTemplate(item));
+        }
+      });
+      return ulContainer.appendChild(fragment);
     }
-    const fragment = document.createDocumentFragment();
-    arr.forEach(item => {
-      // listItemTemplate(item)
-      fragment.appendChild(listItemTemplate(item));
-    });
-    return ulContainer.appendChild(fragment);
-    // console.log(fragment)
   }
 
   // Формирует таск-объект
