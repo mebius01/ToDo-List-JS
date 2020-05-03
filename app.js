@@ -37,7 +37,7 @@ const tasks = [{
   ulContainer.addEventListener('click', executeTaskHendler);
   filterGroupTasks.addEventListener('click', filterTasks);
 
-  renderAllTasks(arrTasks);
+  // renderAllTasks(arrTasks);
 
   function boolComolited(bool) {
     const newarrTasks = arrTasks.filter(item => item.completed == bool);
