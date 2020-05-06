@@ -1,6 +1,6 @@
 # To-Do list
 
-Домен: [https://mebius01.github.io/todo-list-JS](https://mebius01.github.io/todo-list-JS)
+Домен: [https://mebius01.github.io/ToDo-List-JS](https://mebius01.github.io/ToDo-List-JS)
 
 - Если массив с задачами пустой то под формой нужно выводить сообщение об этом, также это же сообщение нужно выводить если вы удалите все задачи.
 
